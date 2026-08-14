@@ -10,7 +10,7 @@ O projeto utiliza **RAG (Retrieval-Augmented Generation)** para buscar informaç
 
 ## 📸 Funcionamento
 
-![FlowDesk Agent](./docs/flowdesk-agent.png)
+![FlowDesk Agent](./documents/demo.webp)
 
 O usuário envia uma pergunta através da interface de chat e o agente procura a informação correspondente na documentação da **FlowDesk**.
 
