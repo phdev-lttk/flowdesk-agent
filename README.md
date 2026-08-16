@@ -8,6 +8,18 @@ O projeto utiliza **RAG (Retrieval-Augmented Generation)** para buscar informaç
 
 ---
 
+## 🌐 Aplicação Online
+
+🚀 **O projeto está publicado e disponível para testes:**
+
+### 👉 [Testar o FlowDesk Agent](https://flowdesk-agent.vercel.app/)
+
+Não é necessário instalar ou configurar nada. Basta acessar a aplicação e enviar uma pergunta.
+
+> **Observação:** o backend utiliza uma instância gratuita do Render. Após períodos sem utilização, o servidor pode entrar em suspensão. Por isso, a primeira resposta pode levar alguns segundos enquanto o serviço é inicializado.
+
+---
+
 ## 📸 Funcionamento
 
 ![FlowDesk Agent](./documents/demo.webp)
@@ -94,67 +106,41 @@ Perguntas relacionadas à documentação utilizam o fluxo RAG.
 * PyMuPDF
 * RAG
 * Embeddings
-* LLM
+* Gemini API
 
 ### Frontend
 
 * React
 * JavaScript
 * Tailwind CSS
+* Vite
+
+### Cloud
+
+* Vercel — Frontend
+* Render — Backend
 
 ---
 
 ## 🏗️ Arquitetura
 
 ```text
-┌─────────────┐
-│   Usuário   │
-└──────┬──────┘
-       │
-       ▼
-┌─────────────┐
-│    React    │
-│  Frontend   │
-└──────┬──────┘
-       │ HTTP
-       ▼
-┌─────────────┐
-│   FastAPI   │
-│   Backend   │
-└──────┬──────┘
-       │
-       ▼
-┌─────────────┐
-│     RAG     │
-└──────┬──────┘
-       │
-   ┌───┴────┐
-   ▼        ▼
-  PDF      LLM
+Usuário
+   ↓
+React + Vercel
+   ↓
+FastAPI + Render
+   ↓
+RAG
+   ├── PDF / Base de conhecimento
+   └── Gemini API
+   ↓
+Resposta
 ```
 
----
+A interface desenvolvida em React envia as perguntas para a API construída com FastAPI.
 
-## 📂 Estrutura
-
-```text
-projeto/
-│
-├── backend/
-│   ├── main.py
-│   ├── requirements.txt
-│   └── documents/
-│       └── flow_TOS.pdf
-│
-├── frontend/
-│   ├── src/
-│   ├── public/
-│   └── package.json
-│
-├── .gitignore
-├── .env.example
-└── README.md
-```
+O backend executa o processo de recuperação das informações relevantes no documento e utiliza o Gemini para gerar a resposta com base no contexto encontrado.
 
 ---
 
@@ -163,19 +149,13 @@ projeto/
 Clone o projeto:
 
 ```bash
-git clone URL_DO_REPOSITORIO
-cd NOME_DO_REPOSITORIO
+git clone https://github.com/phdev-lttk/flowdesk-agent.git
+cd flowdesk-agent
 ```
 
 ### Backend
 
-Entre na pasta:
-
-```bash
-cd backend
-```
-
-Crie o ambiente virtual:
+Crie e ative um ambiente virtual:
 
 ```bash
 python3 -m venv .venv
@@ -188,16 +168,16 @@ Instale as dependências:
 pip install -r requirements.txt
 ```
 
-Configure as variáveis de ambiente:
+Configure sua chave no `.env`:
 
 ```env
-API_KEY=sua_chave_aqui
+GEMINI_API_KEY=sua_chave_aqui
 ```
 
 Inicie a API:
 
 ```bash
-uvicorn main:app --reload
+uvicorn app.main:app --reload
 ```
 
 O backend estará disponível em:
@@ -206,7 +186,7 @@ O backend estará disponível em:
 http://127.0.0.1:8000
 ```
 
-A documentação do FastAPI estará em:
+A documentação Swagger estará disponível em:
 
 ```text
 http://127.0.0.1:8000/docs
@@ -280,6 +260,33 @@ A FlowDesk possui aplicativo para smartwatch?
 
 Nesses casos, o agente deve informar que não encontrou a informação na documentação.
 
+---
+
+## ☁️ Deploy
+
+A aplicação está dividida em dois serviços:
+
+**Frontend:** Vercel
+**Backend:** Render
+**IA e Embeddings:** Gemini API
+
+O fluxo em produção é:
+
+```text
+Usuário
+   ↓
+Vercel (React)
+   ↓
+Render (FastAPI)
+   ↓
+RAG + Gemini API
+   ↓
+Resposta
+```
+
+### 🔗 Acessar aplicação
+
+👉 **https://flowdesk-agent.vercel.app/**
 
 ---
 
@@ -287,4 +294,8 @@ Nesses casos, o agente deve informar que não encontrou a informação na docume
 
 Projeto desenvolvido para o programa **Oracle Next Education (ONE)** com o objetivo de aplicar conceitos de:
 
-**Inteligência Artificial • RAG • Python • FastAPI • React • Processamento de documentos • Cloud**
+**Inteligência Artificial • RAG • Python • FastAPI • React • Processamento de documentos • APIs • Cloud**
+
+---
+
+⭐ Se este projeto foi útil ou interessante, considere deixar uma estrela no repositório.
