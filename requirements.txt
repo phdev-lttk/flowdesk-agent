@@ -4,4 +4,4 @@ python-multipart
 pymupdf
 google-genai
 python-dotenv
-sentence-transformers
+numpy
