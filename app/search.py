@@ -1,7 +1,35 @@
-from sentence_transformers import SentenceTransformer
-from sentence_transformers.util import cos_sim
+import os
+import numpy as np
 
-model = SentenceTransformer("all-MiniLM-L6-v2")
+from google import genai
+from dotenv import load_dotenv
+
+load_dotenv()
+
+client = genai.Client(
+    api_key=os.getenv("GEMINI_API_KEY")
+)
+
+
+def get_embedding(text: str) -> np.ndarray:
+    response = client.models.embed_content(
+        model="gemini-embedding-001",
+        contents=text
+    )
+
+    return np.array(
+        response.embeddings[0].values,
+        dtype=np.float32
+    )
+
+
+def cosine_similarity(a: np.ndarray, b: np.ndarray) -> float:
+    denominator = np.linalg.norm(a) * np.linalg.norm(b)
+
+    if denominator == 0:
+        return 0.0
+
+    return float(np.dot(a, b) / denominator)
 
 
 def search_relevant_chunks(
@@ -10,16 +38,26 @@ def search_relevant_chunks(
     top_k: int = 3
 ) -> list[str]:
 
-    chunk_embeddings = model.encode(chunks, convert_to_tensor=True)
-    question_embedding = model.encode(question, convert_to_tensor=True)
+    question_embedding = get_embedding(question)
 
-    scores = cos_sim(question_embedding, chunk_embeddings)[0]
+    results = []
 
-    top_results = scores.topk(k=min(top_k, len(chunks)))
+    for chunk in chunks:
+        chunk_embedding = get_embedding(chunk)
 
-    relevant_chunks = []
+        score = cosine_similarity(
+            question_embedding,
+            chunk_embedding
+        )
 
-    for index in top_results.indices:
-        relevant_chunks.append(chunks[index])
+        results.append((score, chunk))
 
-    return relevant_chunks
+    results.sort(
+        key=lambda item: item[0],
+        reverse=True
+    )
+
+    return [
+        chunk
+        for _, chunk in results[:top_k]
+    ]
